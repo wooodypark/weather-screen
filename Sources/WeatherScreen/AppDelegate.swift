@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 메뉴에서 상태 텍스트를 갱신하기 위해 항목을 보관.
     private var statusMenuItem: NSMenuItem!
+    private var locationMenuItem: NSMenuItem!
     private var lastUpdatedItem: NSMenuItem!
 
     // 모드 표시용 메뉴 항목(체크마크를 갱신하기 위해 보관).
@@ -49,6 +50,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusMenuItem = NSMenuItem(title: "상태: 확인 중…", action: nil, keyEquivalent: "")
         statusMenuItem.isEnabled = false
         menu.addItem(statusMenuItem)
+
+        locationMenuItem = NSMenuItem(title: "위치: -", action: nil, keyEquivalent: "")
+        locationMenuItem.isEnabled = false
+        menu.addItem(locationMenuItem)
 
         lastUpdatedItem = NSMenuItem(title: "마지막 업데이트: -", action: nil, keyEquivalent: "")
         lastUpdatedItem.isEnabled = false
@@ -108,6 +113,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .success(let condition):
                 self.statusItem.button?.title = condition.emoji
                 self.statusMenuItem.title = "상태: \(condition.label)"
+                self.locationMenuItem.title = "위치: \(self.weather.lastLocationName ?? "-")"
                 self.lastUpdatedItem.title = "마지막 업데이트: \(Self.timeString())"
             case .failure(let error):
                 self.statusItem.button?.title = "⚠️"

@@ -144,6 +144,8 @@ final class WeatherManager {
         guard let first = decoded.weather.first else {
             throw WeatherError.emptyPayload
         }
+        // 응답의 도시명을 저장(위/경도 조회여도 API 가 지역명을 돌려줍니다).
+        lastLocationName = decoded.name.isEmpty ? nil : decoded.name
         return WeatherCondition.from(openWeatherCode: first.id)
     }
 }

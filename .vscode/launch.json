@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:weather_screen}",
+            "name": "Debug WeatherScreen",
+            "target": "WeatherScreen",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug WeatherScreen"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:weather_screen}",
+            "name": "Release WeatherScreen",
+            "target": "WeatherScreen",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release WeatherScreen"
+        }
+    ]
+}

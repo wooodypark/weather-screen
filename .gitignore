@@ -1,0 +1,9 @@
+# SwiftPM 빌드 산출물
+.build/
+# 생성된 앱 번들 (릴리스로 배포, 소스에는 커밋 안 함)
+WeatherScreen.app/
+# Xcode
+*.xcodeproj/xcuserdata/
+.DS_Store
+# SwiftPM
+Package.resolved

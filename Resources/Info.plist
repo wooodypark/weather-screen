@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  .app 번들에 들어갈 Info.plist.
+  build_app.sh 가 이 파일을 WeatherScreen.app/Contents/Info.plist 로 복사합니다.
+
+  핵심 키:
+    - LSUIElement: true  → 도크에 아이콘을 띄우지 않는 메뉴바 상주 앱.
+    - LSMinimumSystemVersion: 13.0 → 최소 macOS 버전.
+    - NSAppTransportSecurity: OpenWeatherMap 은 https 라 별도 예외 불필요.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>WeatherScreen</string>
+    <key>CFBundleDisplayName</key>
+    <string>WeatherScreen</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.github.weatherscreen</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>WeatherScreen</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+
+    <!-- 도크 아이콘 숨김 + 메뉴바 상주 -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <!-- 고해상도 지원 -->
+    <key>NSHighResolutionCapable</key>
+    <true/>
+
+    <!-- 위치 권한 설명(자동 위치 사용 시 표시되는 팝업 문구) -->
+    <key>NSLocationUsageDescription</key>
+    <string>현재 위치의 날씨를 가져오기 위해 위치 정보를 사용합니다.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>현재 위치의 날씨를 가져오기 위해 위치 정보를 사용합니다.</string>
+
+    <!-- 사람이 읽을 카피라이트 -->
+    <key>NSHumanReadableCopyright</key>
+    <string>Open source. MIT License.</string>
+</dict>
+</plist>

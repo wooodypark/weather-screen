@@ -49,7 +49,8 @@ final class WeatherScene: SKScene {
     // MARK: - 렌더 on/off
 
     private func startEffects(_ nodes: [SKEmitterNode]) {
-        removeAction(forKey: fadeOutKey)   // 진행 중이던 fade-out 취소.
+        fadeOutTimer?.invalidate()   // 진행 중이던 fade-out 정리 예약 취소.
+        fadeOutTimer = nil
         removeEmitters()
         let birthScale = intensity * resolutionScale
         for node in nodes {
@@ -61,36 +62,45 @@ final class WeatherScene: SKScene {
         view?.isPaused = false
     }
 
-    private let fadeOutKey = "fadeOut"
+    /// 렌더 정지를 예약한 타이머. pause 상태와 무관하게(실시간) 정리를 보장합니다.
+    private var fadeOutTimer: Timer?
 
     /// 맑음 전환: 생성을 멈추고 남은 파티클을 fadeOutDuration 동안 서서히 투명하게
     /// 만든 뒤 정지합니다. 곧바로 isPaused=true 하면 떨어지던 비/눈이 화면에
     /// 얼어붙으므로 페이드로 부드럽게 걷어냅니다.
+    ///
+    /// 최종 정리는 SKAction 이 아니라 Timer 로 겁니다. SKAction 은 씬/뷰가 pause
+    /// 상태(디스플레이 절전 등)면 진행되지 않아, 비가 얼어붙은 채 남는 버그가
+    /// 있었습니다. Timer 는 pause 와 무관하게 실시간으로 도므로 확실히 걷어냅니다.
     private func stopEffects() {
+        fadeOutTimer?.invalidate()
+        fadeOutTimer = nil
+
         guard !emitters.isEmpty else {
             isPaused = true
             view?.isPaused = true
             return
         }
 
-        // 파티클 수명(비 1.4s, 눈 12s)을 다 기다리면 눈이 너무 오래 남으므로,
-        // 남은 파티클의 alpha 를 이 시간 동안 0 으로 낮춰 일괄 페이드아웃합니다.
+        // 렌더가 멈춰 있으면 페이드가 보이지도 않으므로, 걷어내는 동안은 렌더를 켭니다.
+        isPaused = false
+        view?.isPaused = false
+
         let fadeOutDuration: TimeInterval = 1.2
         for e in emitters {
             e.particleBirthRate = 0
-            // 방출기가 새로 만들 파티클뿐 아니라, 이미 살아있는 파티클도
-            // 함께 옅어지도록 방출기 노드 자체의 alpha 를 애니메이션.
             e.run(SKAction.fadeOut(withDuration: fadeOutDuration))
         }
 
-        let wait = SKAction.wait(forDuration: fadeOutDuration)
-        let finish = SKAction.run { [weak self] in
-            guard let self else { return }
-            self.removeEmitters()
-            self.isPaused = true
-            self.view?.isPaused = true
+        fadeOutTimer = Timer.scheduledTimer(withTimeInterval: fadeOutDuration, repeats: false) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.removeEmitters()
+                self.isPaused = true
+                self.view?.isPaused = true
+                self.fadeOutTimer = nil
+            }
         }
-        run(SKAction.sequence([wait, finish]), withKey: fadeOutKey)
     }
 
     private func removeEmitters() {
